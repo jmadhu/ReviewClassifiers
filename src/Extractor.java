@@ -9,11 +9,9 @@ public class Extractor {
     public static final String REVIEW_BEGIN_TOKEN = "review/text:";
     public static final String REVIEW_END_TOKEN = "product/productId:";
     public static final String SCORE_TOKEN = "review/score:";
-    public HashMap<String, Integer> vocabulary;
     public ArrayList<Example> examples;
     
     public Extractor() {
-        vocabulary = new HashMap<String, Integer>();
         examples = new ArrayList<Example>();
     }
     
@@ -22,7 +20,8 @@ public class Extractor {
      * 
      * @param filepath
      */
-    public void extract(String filepath) {
+    public HashMap<String, Integer> extractVocabulary(String filepath) {
+        HashMap<String, Integer> vocabulary = new HashMap<String, Integer>();
         boolean buildingExample = false;
         Example example = new Example();
         try {
@@ -31,27 +30,27 @@ public class Extractor {
                 String word = scanner.next();
                 if (buildingExample && word.equals(REVIEW_END_TOKEN)) {
                     buildingExample = false;
-                    examples.add(example);
-                    example = new Example();
+                    //examples.add(example);
+                    //example = new Example();
                 } else {
                     if (!buildingExample) {
-                        if (word.equals(SCORE_TOKEN)) {
-                            double score = Double.parseDouble(scanner.next());
-                            example.isPositive = score >= 2.5;
-                        } else if (word.equals(REVIEW_BEGIN_TOKEN)) {
+//                        if (word.equals(SCORE_TOKEN)) {
+//                            double score = Double.parseDouble(scanner.next());
+//                            example.isPositive = score >= 2.5;
+                        if (word.equals(REVIEW_BEGIN_TOKEN)) {
                             buildingExample = true;
                         }
                     } else {
                         if (word.length() <= MAX_WORD_LENGTH) {
-                            Integer exampleCount = example.wordCounts.get(word);
+//                            Integer exampleCount = example.wordCounts.get(word);
                             Integer vocabCount = vocabulary.get(word);
-                            example.wordCounts.put(word, exampleCount == null ? 1 : exampleCount + 1);
+//                            example.wordCounts.put(word, exampleCount == null ? 1 : exampleCount + 1);
                             vocabulary.put(word, vocabCount == null? 1 : vocabCount + 1);
                         }
                         // append if EOF is reached
-                        if (!scanner.hasNext()) {
-                            examples.add(example);
-                        }
+//                        if (!scanner.hasNext()) {
+//                            examples.add(example);
+//                        }
                     }
                 }
             }
@@ -59,11 +58,13 @@ public class Extractor {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        return vocabulary;
     }
 
     
     public static void main(String[] args){
         Extractor extractor = new Extractor();
-        extractor.extract("foods.txt");
+        HashMap<String, Integer> vocabulary = extractor.extractVocabulary("foods.txt");
+        System.out.println("done");
     }
 }
