@@ -25,7 +25,7 @@ public class Extractor {
         boolean buildingExample = false;
         Example example = new Example();
         try {
-            Scanner scanner = new Scanner(new File(filepath));
+        	Scanner scanner = new Scanner(new File(filepath));
             while (scanner.hasNext()) {
                 String word = scanner.next();
                 if (buildingExample && word.equals(REVIEW_END_TOKEN)) {
@@ -43,9 +43,14 @@ public class Extractor {
                     } else {
                         if (word.length() <= MAX_WORD_LENGTH) {
 //                            Integer exampleCount = example.wordCounts.get(word);
-                            Integer vocabCount = vocabulary.get(word);
 //                            example.wordCounts.put(word, exampleCount == null ? 1 : exampleCount + 1);
-                            vocabulary.put(word, vocabCount == null? 1 : vocabCount + 1);
+                        	String[] words = processWord(word);
+                        	for(String w: words){
+                            	Integer vocabCount = vocabulary.get(w);
+                            	if(w.equals(""))
+                            		continue;
+                            	vocabulary.put(w, vocabCount == null? 1 : vocabCount + 1);
+                            }
                         }
                         // append if EOF is reached
 //                        if (!scanner.hasNext()) {
@@ -59,6 +64,9 @@ public class Extractor {
             e.printStackTrace();
         }
         return vocabulary;
+    }
+    private String[] processWord(String word){
+    	return word.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+");
     }
 
     
