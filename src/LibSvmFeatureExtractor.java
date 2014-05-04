@@ -8,11 +8,20 @@ import java.util.Set;
 
 
 public class LibSvmFeatureExtractor {
-    private static double TRAIN_TEST_RATIO = 0.5;
+    private static final double TRAIN_TEST_RATIO = 0.5;
+    private static final String TRAIN_FILE = "a.train";
+    private static final String TEST_FILE = "a.test";
 
     public static void extract(String filepath, Set<String> vocabulary) {
         boolean buildingExample = false;
         Example example = new Example();
+        try{
+            new File(TRAIN_FILE).delete();
+            new File(TEST_FILE).delete();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        
         try {
         	Scanner scanner = new Scanner(new File(filepath));
             while (scanner.hasNext()) {
@@ -63,14 +72,18 @@ public class LibSvmFeatureExtractor {
             }
             featureNum++;
         }
+        // ignore examples without features
+        if (builder.length() == 2) {
+            return;
+        }
         builder.append("\n");  
         try {
             String content = builder.toString();
             File file;
             if (Math.random() >= TRAIN_TEST_RATIO) {
-                file = new File("a.train");
+                file = new File(TRAIN_FILE);
             } else {
-                file = new File("a.test");
+                file = new File(TEST_FILE);
             }
     
             if (!file.exists()) {
