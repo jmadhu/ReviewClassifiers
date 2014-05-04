@@ -49,6 +49,7 @@ public class Extractor {
                             	Integer vocabCount = vocabulary.get(w);
                             	if(w.equals(""))
                             		continue;
+                            	System.out.println(w);
                             	vocabulary.put(w, vocabCount == null? 1 : vocabCount + 1);
                             }
                         }
@@ -66,13 +67,13 @@ public class Extractor {
         return vocabulary;
     }
     private String[] processWord(String word){
-    	return word.replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+");
+    	return word.replaceAll("(?!\')\\p{Punct}", " ").toLowerCase().split("\\s+");
     }
 
     
     public static void main(String[] args){
         Extractor extractor = new Extractor();
-        HashMap<String, Integer> vocabulary = extractor.extractVocabulary("foods.txt");
+        HashMap<String, Integer> vocabulary = extractor.extractVocabulary("foods_fake.txt");
         System.out.println("done");
     }
 }
