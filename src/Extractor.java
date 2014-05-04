@@ -46,6 +46,7 @@ public class Extractor {
         
         boolean buildingExample = false;
         Example example = new Example();
+        StopWordsSet stopwords = new StopWordsSet();
         try {
         	Scanner scanner = new Scanner(new File(filepath));
             while (scanner.hasNext()) {
@@ -69,8 +70,9 @@ public class Extractor {
                         	String[] words = processWord(word);
                         	for(String w: words){
                             	Integer vocabCount = vocabulary.get(w);
-                            	if(w.equals(""))
+                            	if(w.equals("") || stopwords.isStopWord(w))
                             		continue;
+                            	
                             	vocabulary.put(w, vocabCount == null? 1 : vocabCount + 1);
                             }
                         }
@@ -88,9 +90,6 @@ public class Extractor {
         
         return vocabulary;
     }
-    
-    
-    
     
     private static void freqwords(HashMap<String, Integer> vocab, int threshold){
     	Set<String> keys = vocab.keySet();
