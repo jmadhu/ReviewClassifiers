@@ -139,7 +139,7 @@ public class NeuralNet implements Classifier{
   }
   
   public String author() { 
-    return "ce/mj";
+    return "jmadhu/kevinlee";
   }
   
   //tests the algorithm by reading in filestem

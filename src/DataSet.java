@@ -28,8 +28,6 @@ public class DataSet {
     /** number of attributes **/
     public int numAttrs;
 
-    /** names of the two classes **/
-    public String className[] = null;
     
     /** number of test examples **/
     public int numTestExs;
@@ -65,14 +63,18 @@ public class DataSet {
      **/
     public DataSet(String filestem, int numAttrs)
 	throws FileNotFoundException, IOException {
-    	ArrayList<int[]> attr_list = new ArrayList<int[]>();
-        ArrayList<Integer> lab_list = new ArrayList<Integer>();
+    	ArrayList<int[]> attr_list;
+        ArrayList<Integer> lab_list;
         this.numAttrs = numAttrs;	
-		String[] words = null;
-		String line = "";
+		String[] words;
+		String line;
 		// read data files
 		int attStart=0;
 		for(int traintest=0; traintest<2; traintest++){
+			line="";
+			words=null;
+			attr_list = new ArrayList<int[]>();
+	        lab_list = new ArrayList<Integer>();
 			if(traintest==TRAIN){
 				try{
 					open_file(filestem + ".train");
@@ -127,24 +129,11 @@ public class DataSet {
 		    for (int i = 0; i < numTrainExs; i++) {
 		    	trainLabel[i] = (lab_list.get(i));
 			}
-		    for(int i=0; i<numTrainExs; i++){
-		    	System.out.println("label: " + trainLabel[i]);
-		    	for(int j=0; j<numAttrs; j++){
-		    		System.out.print(trainEx[i][j] + " ");
-		    	}
-		    	System.out.println();
-		    }
 	    }
 	    else{
 		    numTestExs = attr_list.size();
 		    testEx = new int[0][];
-		    testEx=(int[][]) attr_list.toArray(trainEx);
-		    for(int i=0; i<numTrainExs; i++){
-		    	for(int j=0; j<numAttrs; j++){
-		    		System.out.print(trainEx[i][j] + " ");
-		    	}
-		    	System.out.println();
-		    }
+		    testEx=(int[][]) attr_list.toArray(testEx);
 	    }
 	}	
 	in.close();
@@ -165,7 +154,7 @@ public class DataSet {
 	out.println(c.algorithmDescription());
 	out.println(".");
 	for(int i = 0; i < numTestExs; i++) {
-	    out.println(className[c.predict(testEx[i])]);
+	    out.println(c.predict(testEx[i]));
 	}
     }
 
