@@ -109,6 +109,7 @@ public class Extractor {
         tm.putAll(vocab);
         
     	Set<String> keys = tm.keySet();
+    	
     	int count=0;
     	for(String s: keys){
     		count++;
@@ -152,10 +153,8 @@ class ValueComparator implements Comparator<String> {
     public int compare(String a, String b) {
         if (base.get(a) < base.get(b)) {
             return -1;
-        } else if (base.get(a) > base.get(b)){
+        } else {
             return 1;
         } 
-        else
-        	return 0;
     }
 }
