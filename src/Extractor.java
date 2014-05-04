@@ -44,7 +44,6 @@ public class Extractor {
     public HashMap<String, Integer> extractVocabulary(String filepath) {
         
         boolean buildingExample = false;
-     //   Example example = new Example();
         StopWordsSet stopwords = new StopWordsSet();
         try {
         	Scanner scanner = new Scanner(new File(filepath));
@@ -52,21 +51,14 @@ public class Extractor {
                 String word = scanner.next();
                 if (buildingExample && word.equals(REVIEW_END_TOKEN)) {
                     buildingExample = false;
-                    //examples.add(example);
-                    //example = new Example();
                 } else {
                     if (!buildingExample) {
-//                        if (word.equals(SCORE_TOKEN)) {
-//                            double score = Double.parseDouble(scanner.next());
-//                            example.isPositive = score >= 2.5;
                         if (word.equals(REVIEW_BEGIN_TOKEN)) {
                             buildingExample = true;
                         }
                     } else {
                         if (word.length() <= MAX_WORD_LENGTH) {
-//                            Integer exampleCount = example.wordCounts.get(word);
-//                            example.wordCounts.put(word, exampleCount == null ? 1 : exampleCount + 1);
-                        	String[] words = processWord(word);
+                        	String[] words = Extractor.processWord(word);
                         	for(String w: words){
                             	Integer vocabCount = vocabulary.get(w);
                             	if(w.equals("") || stopwords.isStopWord(w))
@@ -120,7 +112,7 @@ public class Extractor {
     }
     
     
-    private String[] processWord(String word){
+    public static String[] processWord(String word){
     	return word.replaceAll("(?!\')\\p{Punct}", " ").toLowerCase().split("\\s+");
     }
 
@@ -135,9 +127,8 @@ public class Extractor {
         // keep only the words that occur at least x times.
         // Extractor.freqwords(vocabulary, 5);
         // keep only the top x words.
-        Extractor.topwords(vocabulary, 600);
-        System.out.println(vocabulary.size());
-        System.out.println("done");
+        Extractor.topwords(vocabulary, 1000);
+        LibSvmFeatureExtractor.extract("foods.txt", vocabulary.keySet());
     }
     
 }
@@ -151,9 +142,9 @@ class ValueComparator implements Comparator<String> {
     // Note: this comparator imposes orderings that are inconsistent with equals.    
     public int compare(String a, String b) {
         if (base.get(a) < base.get(b)) {
-            return -1;
-        } else {
             return 1;
+        } else {
+            return -1;
         } 
     }
 }
