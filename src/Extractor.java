@@ -1,8 +1,13 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class Extractor {
     public static final int MAX_WORD_LENGTH = 20;
@@ -12,20 +17,33 @@ public class Extractor {
     public ArrayList<Example> examples;
     public static int wordCount;
     public static int uniqueCount;
+    public static HashMap<String, Integer> vocabulary;
     
     public Extractor() {
         examples = new ArrayList<Example>();
-	wordCount=0;
-	uniqueCount=0;
+        vocabulary = new HashMap<String, Integer>();
+        wordCount=0;
+        uniqueCount=0;
     }
     
+    public static int getUniqueWordCount(){
+    	uniqueCount = vocabulary.size();
+    	return uniqueCount;
+    }
+
+    public static int getTotalWordCount(){
+    	for(String s: vocabulary.keySet()){
+    		wordCount += vocabulary.get(s);
+    	}
+    	return wordCount;
+    }
     /**
      * extract vocabulary and examples from file at filepath
      * 
      * @param filepath
      */
     public HashMap<String, Integer> extractVocabulary(String filepath) {
-        HashMap<String, Integer> vocabulary = new HashMap<String, Integer>();
+        
         boolean buildingExample = false;
         Example example = new Example();
         try {
@@ -53,9 +71,6 @@ public class Extractor {
                             	Integer vocabCount = vocabulary.get(w);
                             	if(w.equals(""))
                             		continue;
-                            	if(vocabCount==null)
-                            		uniqueCount++;
-                            	wordCount++;
                             	vocabulary.put(w, vocabCount == null? 1 : vocabCount + 1);
                             }
                         }
@@ -70,8 +85,42 @@ public class Extractor {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        
         return vocabulary;
     }
+    
+    
+    
+    
+    private static void freqwords(HashMap<String, Integer> vocab, int threshold){
+    	Set<String> keys = vocab.keySet();
+    	Set<String> toremove = new HashSet<String>();
+    	for(String s: keys){
+    		if(vocab.get(s)<threshold)
+    			toremove.add(s);
+    	}
+    	for(String s: toremove){
+    		vocab.remove(s);
+    	}    	
+    }
+    
+    private static void topwords(HashMap<String, Integer> vocab, int top){
+        ValueComparator valcomp =  new ValueComparator(vocab);
+        TreeMap<String, Integer> tm = new TreeMap<String,Integer>(valcomp);
+        tm.putAll(vocab);
+        
+    	Set<String> keys = tm.keySet();
+    	int count=0;
+    	for(String s: keys){
+    		count++;
+    		if(count<=top)
+    			continue;
+    		vocab.remove(s);
+    	}
+    	
+    }
+    
+    
     private String[] processWord(String word){
     	return word.replaceAll("(?!\')\\p{Punct}", " ").toLowerCase().split("\\s+");
     }
@@ -79,9 +128,35 @@ public class Extractor {
     
     public static void main(String[] args){
         Extractor extractor = new Extractor();
-        HashMap<String, Integer> vocabulary = extractor.extractVocabulary("foods.txt");
-        System.out.println("Total Word Count: " + Extractor.wordCount);
-        System.out.println("Unique Word Count: " + Extractor.uniqueCount);
+        HashMap<String, Integer> vocabulary = extractor.extractVocabulary("foods_fake.txt");
+        System.out.println("Total Word Count: " + Extractor.getTotalWordCount());
+        System.out.println("Unique Word Count: " + Extractor.getUniqueWordCount());
+//      Total Word Count: 5874
+//      Unique Word Count: 1434
+        // keep only the words that occur at least x times.
+        // Extractor.freqwords(vocabulary, 5);
+        // keep only the top x words.
+        Extractor.topwords(vocabulary, 5);
+        System.out.println(vocabulary.size());
         System.out.println("done");
+    }
+    
+}
+class ValueComparator implements Comparator<String> {
+
+    HashMap<String, Integer> base;
+    public ValueComparator(HashMap<String, Integer> base) {
+        this.base = base;
+    }
+
+    // Note: this comparator imposes orderings that are inconsistent with equals.    
+    public int compare(String a, String b) {
+        if (base.get(a) < base.get(b)) {
+            return -1;
+        } else if (base.get(a) > base.get(b)){
+            return 1;
+        } 
+        else
+        	return 0;
     }
 }
