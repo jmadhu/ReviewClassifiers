@@ -10,9 +10,13 @@ public class Extractor {
     public static final String REVIEW_END_TOKEN = "product/productId:";
     public static final String SCORE_TOKEN = "review/score:";
     public ArrayList<Example> examples;
+    public static int wordCount;
+    public static int uniqueCount;
     
     public Extractor() {
         examples = new ArrayList<Example>();
+	wordCount=0;
+	uniqueCount=0;
     }
     
     /**
@@ -49,7 +53,9 @@ public class Extractor {
                             	Integer vocabCount = vocabulary.get(w);
                             	if(w.equals(""))
                             		continue;
-                            	System.out.println(w);
+                            	if(vocabCount==null)
+                            		uniqueCount++;
+                            	wordCount++;
                             	vocabulary.put(w, vocabCount == null? 1 : vocabCount + 1);
                             }
                         }
@@ -73,7 +79,9 @@ public class Extractor {
     
     public static void main(String[] args){
         Extractor extractor = new Extractor();
-        HashMap<String, Integer> vocabulary = extractor.extractVocabulary("foods_fake.txt");
+        HashMap<String, Integer> vocabulary = extractor.extractVocabulary("foods.txt");
+        System.out.println("Total Word Count: " + Extractor.wordCount);
+        System.out.println("Unique Word Count: " + Extractor.uniqueCount);
         System.out.println("done");
     }
 }
