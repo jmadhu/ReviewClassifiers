@@ -128,7 +128,7 @@ public class Extractor {
     
     public static void main(String[] args){
         Extractor extractor = new Extractor();
-        HashMap<String, Integer> vocabulary = extractor.extractVocabulary("foods_fake.txt");
+        HashMap<String, Integer> vocabulary = extractor.extractVocabulary("foods.txt");
         System.out.println("Total Word Count: " + Extractor.getTotalWordCount());
         System.out.println("Unique Word Count: " + Extractor.getUniqueWordCount());
 //      Total Word Count: 5874
@@ -136,7 +136,7 @@ public class Extractor {
         // keep only the words that occur at least x times.
         // Extractor.freqwords(vocabulary, 5);
         // keep only the top x words.
-        Extractor.topwords(vocabulary, 5);
+        Extractor.topwords(vocabulary, 600);
         System.out.println(vocabulary.size());
         System.out.println("done");
     }
