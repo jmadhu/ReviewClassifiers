@@ -24,6 +24,9 @@ public class DataSet {
 
     /** an array of labels for the training examples **/
     public int trainLabel[];
+
+    /** an array of labels for the testing examples **/
+    public int testLabel[];
     
     /** number of attributes **/
     public int numAttrs;
@@ -37,7 +40,7 @@ public class DataSet {
 
     public static void main(String args[]){
     	try {
-			DataSet ds = new DataSet("a", 600);
+			DataSet ds = new DataSet("b", 200);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -69,7 +72,6 @@ public class DataSet {
 		String[] words;
 		String line;
 		// read data files
-		int attStart=0;
 		for(int traintest=0; traintest<2; traintest++){
 			line="";
 			words=null;
@@ -82,7 +84,6 @@ public class DataSet {
 				catch(Exception e){
 					continue;
 				}
-				attStart=1;	//label
 			}
 			if(traintest==TEST){
 				try{
@@ -91,7 +92,6 @@ public class DataSet {
 				catch(Exception e){
 					continue;
 				}
-				attStart=0;	//no label
 			}
 		    while((line = read_line()) != null) {
 				line = line.trim( );
@@ -99,23 +99,21 @@ public class DataSet {
 				    continue;
 		
 				words = line.split("\\s+");
-				if(traintest==0){
-				    if (words[0].equals("+1")) {
-				    	lab_list.add(new Integer(1));
-				    } else {
-				    	lab_list.add(new Integer(-1));
-				    } 
-				}
+			    if (words[0].equals("+1")) {
+			    	lab_list.add(new Integer(1));
+			    } else {
+			    	lab_list.add(new Integer(-1));
+			    } 
 			    
 			    int[] attributes = new int[numAttrs];
 			    
 				String[] att = new String[2];
 				int[] attr = new int[2];
-				for (int i = attStart; i < words.length; i++) {
+				for (int i = 1; i < words.length; i++) {
 					att = words[i].split(":");
 					attr[0]= Integer.parseInt(att[0]);
 					attr[1]= Integer.parseInt(att[1]);
-					attributes[attr[0]] = attr[1]; 
+					attributes[attr[0]-1] = attr[1]; 
 	
 				}
 				attr_list.add(attributes);
@@ -134,6 +132,10 @@ public class DataSet {
 		    numTestExs = attr_list.size();
 		    testEx = new int[0][];
 		    testEx=(int[][]) attr_list.toArray(testEx);
+		    testLabel = new int[numTestExs];
+		    for (int i = 0; i < numTestExs; i++) {
+		    	testLabel[i] = (lab_list.get(i));
+			}
 	    }
 	}	
 	in.close();
@@ -153,9 +155,18 @@ public class DataSet {
 	out.println(".");
 	out.println(c.algorithmDescription());
 	out.println(".");
+	int prediction=0;
+	int err=0;
+	int cor=0;
 	for(int i = 0; i < numTestExs; i++) {
-	    out.println(c.predict(testEx[i]));
+		prediction = c.predict(testEx[i]);
+		if(testLabel[i]==prediction || (testLabel[i]==-1 && prediction==0))
+			cor++;
+		else
+			err++;
+	    out.println(prediction);
 	}
+	System.out.println("correct: " + cor + "  error: " + err);
     }
 
     /** This method prints out the predictions of classifier

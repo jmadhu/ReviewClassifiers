@@ -146,12 +146,12 @@ public class NeuralNet implements Classifier{
   public static void main(String argv[])
     throws FileNotFoundException, IOException {
     
-    if (argv.length < 1) {
-      System.err.println("argument: filestem");
-      return;
-    }
-    String filestem = argv[0];
-    DataSet d = new DataSet(filestem, 600);
+//    if (argv.length < 1) {
+//      System.err.println("argument: filestem");
+//      return;
+//    }
+    String filestem = "c";
+    DataSet d = new DataSet(filestem, 200);
     //default values
     int hu = 10;
     double lr = 0.1;
