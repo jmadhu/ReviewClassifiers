@@ -148,8 +148,8 @@ public class NeuralNet implements Classifier{
 //      System.err.println("argument: filestem");
 //      return;
 //    }
-    String filestem = "c";
-    DataSet d = new DataSet(filestem, 200);
+    String filestem = "a";
+    DataSet d = new DataSet(filestem, Integer.parseInt(argv[4]));
     //default values
     int hu = 10;
     double lr = 0.1;

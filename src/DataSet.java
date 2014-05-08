@@ -167,6 +167,7 @@ public class DataSet {
 	    out.println(prediction);
 	}
 	System.out.println("correct: " + cor + "  error: " + err);
+	System.out.println("accuracy: " + ((double) cor / (cor + err)));
     }
 
     /** This method prints out the predictions of classifier

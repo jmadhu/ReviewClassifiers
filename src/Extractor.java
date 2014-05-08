@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,6 +10,8 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class Extractor {
+    public static int NUM_EXAMPLES = -1;
+    public static int NUM_FEATURES = 50;
     public static final int MAX_WORD_LENGTH = 20;
     public static final String REVIEW_BEGIN_TOKEN = "review/text:";
     public static final String REVIEW_END_TOKEN = "product/productId:";
@@ -41,9 +44,10 @@ public class Extractor {
      * 
      * @param filepath
      */
-    public HashMap<String, Integer> extractVocabulary(String filepath) {
+    public HashMap<String, Integer> extractVocabulary(String filepath, int numExamples) {
         
         boolean buildingExample = false;
+        int reviewNum = 1;
         StopWordsSet stopwords = new StopWordsSet();
         try {
         	Scanner scanner = new Scanner(new File(filepath));
@@ -51,6 +55,10 @@ public class Extractor {
                 String word = scanner.next();
                 if (buildingExample && word.equals(REVIEW_END_TOKEN)) {
                     buildingExample = false;
+                    if (numExamples != -1 && reviewNum > numExamples) {
+                        break;
+                    }
+                    reviewNum++;
                 } else {
                     if (!buildingExample) {
                         if (word.equals(REVIEW_BEGIN_TOKEN)) {
@@ -118,8 +126,10 @@ public class Extractor {
 
     
     public static void main(String[] args){
+        NUM_EXAMPLES = Integer.parseInt(args[0]);
+        NUM_FEATURES = Integer.parseInt(args[1]);
         Extractor extractor = new Extractor();
-        HashMap<String, Integer> vocabulary = extractor.extractVocabulary("foods.txt");
+        HashMap<String, Integer> vocabulary = extractor.extractVocabulary("foods.txt", NUM_EXAMPLES);
         System.out.println("Total Word Count: " + Extractor.getTotalWordCount());
         System.out.println("Unique Word Count: " + Extractor.getUniqueWordCount());
 //      Total Word Count: 5874
@@ -127,8 +137,15 @@ public class Extractor {
         // keep only the words that occur at least x times.
         // Extractor.freqwords(vocabulary, 5);
         // keep only the top x words.
-        Extractor.topwords(vocabulary, 1000);
-        LibSvmFeatureExtractor.extract("foods.txt", vocabulary.keySet());
+        Extractor.topwords(vocabulary, NUM_FEATURES);
+        LibSvmFeatureExtractor.extract("foods.txt", vocabulary.keySet(), NUM_EXAMPLES);
+        try {
+            NeuralNet.main(new String[] {"a", args[2], "0.1", "100", "" + NUM_FEATURES});
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
 }
