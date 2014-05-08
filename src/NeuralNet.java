@@ -31,8 +31,6 @@ public class NeuralNet implements Classifier{
     //deltas for back propogation:
     double outputDelta = 0;
     double[] hiddenDelta = new double[hiddenUnits];
-    double[] inputDelta = new double[d.numAttrs];
-    int realOutput;
     
     for(int i = 0; i < hiddenUnits; i++) {
       for(int j = 0; j < d.numAttrs; j++) {             
